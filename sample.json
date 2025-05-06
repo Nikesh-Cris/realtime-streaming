@@ -1,0 +1,40 @@
+{
+	"customerId": 20748,
+	"products": [
+		{
+			"id": "P010",
+			"name": "Wireless Headphones",
+			"price": 100.0,
+			"currency": "INR",
+			"qty": 2
+		},
+		{
+			"id": "P011",
+			"name": "Wireless Mouse",
+			"price": 100.0,
+			"currency": "INR",
+			"qty": 2
+		},
+		{
+			"id": "P008",
+			"name": "Speaker",
+			"price": 50.0,
+			"currency": "USD",
+			"qty": 4
+		},
+		{
+			"id": "P004",
+			"name": "Camera",
+			"price": 600.0,
+			"currency": "EUR",
+			"qty": 5
+		}
+	],
+	"orderDate": "2025-05-06T07:25:21.184558Z",
+	"location": "India",
+	"shopDetails": {
+		"shopId": "0a9b8657-4fe5-4905-b0c8-5f39dfea521f",
+		"shopName": "Fashion Hub"
+	},
+	"orderId": "ebd1aea1-8376-4087-a17b-7d4afd396d31"
+}
