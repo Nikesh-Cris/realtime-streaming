@@ -1,0 +1,8 @@
+Path Pattern
+orders/{date}/{time}
+
+Date Format
+YYYY/MM/DD
+
+Time Format
+HH-MM

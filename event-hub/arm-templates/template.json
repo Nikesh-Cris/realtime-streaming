@@ -1,0 +1,185 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaces_eventhub_nikesh_name": {
+            "defaultValue": "eventhub-nikesh",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.EventHub/namespaces",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[parameters('namespaces_eventhub_nikesh_name')]",
+            "location": "southindia",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 1
+            },
+            "properties": {
+                "geoDataReplication": {
+                    "maxReplicationLagDurationInSeconds": 0,
+                    "locations": [
+                        {
+                            "locationName": "southindia",
+                            "roleType": "Primary"
+                        }
+                    ]
+                },
+                "minimumTlsVersion": "1.2",
+                "publicNetworkAccess": "Enabled",
+                "disableLocalAuth": false,
+                "zoneRedundant": false,
+                "isAutoInflateEnabled": false,
+                "maximumThroughputUnits": 0,
+                "kafkaEnabled": true
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/authorizationrules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/RootManageSharedAccessKey')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/event-hub-1')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "messageTimestampDescription": {
+                    "timestampType": "LogAppend"
+                },
+                "retentionDescription": {
+                    "cleanupPolicy": "Delete",
+                    "retentionTimeInHours": 1
+                },
+                "messageRetentionInDays": 1,
+                "partitionCount": 2,
+                "status": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/stream-analytics-event-hub')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "messageTimestampDescription": {
+                    "timestampType": "LogAppend"
+                },
+                "retentionDescription": {
+                    "cleanupPolicy": "Delete",
+                    "retentionTimeInHours": 1
+                },
+                "messageRetentionInDays": 1,
+                "partitionCount": 2,
+                "status": "Disabled"
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/networkrulesets",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/default')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "publicNetworkAccess": "Enabled",
+                "defaultAction": "Allow",
+                "virtualNetworkRules": [],
+                "ipRules": [],
+                "trustedServiceAccessEnabled": false
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/authorizationrules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/event-hub-1/databricks')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_eventhub_nikesh_name'), 'event-hub-1')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/authorizationrules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/stream-analytics-event-hub/stream-analytics-job_data-from-event-hub_policy')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_eventhub_nikesh_name'), 'stream-analytics-event-hub')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Listen"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/authorizationrules",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/stream-analytics-event-hub/stream-policy')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_eventhub_nikesh_name'), 'stream-analytics-event-hub')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {
+                "rights": [
+                    "Manage",
+                    "Listen",
+                    "Send"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/event-hub-1/$Default')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_eventhub_nikesh_name'), 'event-hub-1')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+            "apiVersion": "2024-05-01-preview",
+            "name": "[concat(parameters('namespaces_eventhub_nikesh_name'), '/stream-analytics-event-hub/$Default')]",
+            "location": "southindia",
+            "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', parameters('namespaces_eventhub_nikesh_name'), 'stream-analytics-event-hub')]",
+                "[resourceId('Microsoft.EventHub/namespaces', parameters('namespaces_eventhub_nikesh_name'))]"
+            ],
+            "properties": {}
+        }
+    ]
+}

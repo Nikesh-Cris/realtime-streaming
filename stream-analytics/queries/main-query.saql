@@ -1,0 +1,51 @@
+WITH FlattenedData AS (
+    SELECT
+        System.Timestamp AS windowEndTime,
+        a.customerId,
+        product.arrayvalue.id AS productId,
+        product.arrayvalue.name AS productName,
+        product.arrayvalue.price AS productPrice,
+        product.arrayvalue.currency AS currency,
+        product.arrayvalue.qty AS quantity,
+        a.orderDate,
+        a.orderId,
+        a.location,
+        a.shopDetails.shopId,
+        a.shopDetails.shopName
+    FROM 
+        [data-from-event-hub] a
+    TIMESTAMP BY orderDate 
+    CROSS APPLY 
+        GetArrayElements(a.products) AS product
+)
+
+SELECT 
+    windowEndTime,
+    customerId,
+    productId,
+    productName,
+    productPrice,
+    currency,
+    quantity,
+    orderDate,
+    orderId,
+    location,
+    shopId,
+    shopName
+INTO 
+    [sql-output]
+FROM 
+    FlattenedData
+
+
+SELECT
+    System.Timestamp as windowEndTime,
+    COUNT(*) AS orderCount,
+    Collect() AS orders
+INTO
+    [adls-output]
+FROM
+    [data-from-event-hub] 
+TIMESTAMP BY orderDate
+GROUP BY
+    TumblingWindow(Duration(minute, 1))

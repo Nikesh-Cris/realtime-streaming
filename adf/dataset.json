@@ -1,0 +1,86 @@
+{
+    "name": "ds_json_stream",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "ls_adls",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "directory": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Json",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": {
+                    "value": "@dataset().directory",
+                    "type": "Expression"
+                },
+                "fileSystem": "stream-analytics-output"
+            }
+        },
+        "schema": {
+            "type": "object",
+            "properties": {
+                "customerId": {
+                    "type": "integer"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "price": {
+                                "type": "number"
+                            },
+                            "currency": {
+                                "type": "string"
+                            },
+                            "qty": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "orderDate": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "shopDetails": {
+                    "type": "object",
+                    "properties": {
+                        "shopId": {
+                            "type": "string"
+                        },
+                        "shopName": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "orderId": {
+                    "type": "string"
+                },
+                "EventProcessedUtcTime": {
+                    "type": "string"
+                },
+                "PartitionId": {
+                    "type": "integer"
+                },
+                "EventEnqueuedUtcTime": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
